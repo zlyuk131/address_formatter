@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        form > div > * {
+            display: inline-block;
+        }
+        div { padding-bottom: 20px;}
+        .lbls { position: relative; width: 105px }
+        .lbl-code { bottom: 14px;}
+        .lbl-addr {
+            bottom: 95px;
+        }
+        #remspace { width: 300px; font-size: 25px;}
+        #addr {width: 300px; height: 100px; font-size: 25px;}
+    </style>
+</head>
+<body>
+ <form id="form">
+     <div>
+         <label for="remcomma">Remove Commas</label>
+         <input type="checkbox" id="remcomma" name="remcomma">
+         <label for="pascal">Pascal case</label>
+         <input type="checkbox" id="pascal" name="pascal">
+    </div>
+    <div>
+        <label class="lbls lbl-code" for="remspace">Remove Spaces</label>
+        <input type="text" id="remspace" name="remspace"> 
+        <button id="copyeircode" data-id="remspace" type="button" return false;>copy</button>
+    </div>
+    <div>
+        <label class="lbls lbl-addr" for="addr">Format address</label>
+        <textarea id="addr" name="addr" ></textarea>
+        <button id="copyaddr" data-id="addr" type="button" return false;>copy</button>
+    </div>
+ </form>
+ <script>
+    var cb1 = document.getElementById("remcomma"),
+        cb2 = document.getElementById("pascal"),
+        inp = document.getElementById("remspace"),
+        cpcode = document.getElementById("copyeircode"),
+        addr = document.getElementById("addr"),
+        cpaddr = document.getElementById("copyaddr");
+
+    var clickTimer;
+
+    var removeSpaces = function (e) {
+        console.log("Input value remove spaces");
+        console.log(e.target.value);
+        e.target.value = e.target.value.replace(" ", "").toUpperCase();
+    }
+
+    var textareaCh = function (e) {
+        if(clickTimer) clearTimeout(clickTimer);
+        clickTimer = setTimeout(()=> {
+            var arr = e.target.value.split(","),
+                arr2 = [];
+            console.log("Address bar");
+            console.log(e.target.value);
+            arr.forEach(elem => {
+                // remove spaces around
+                elem = elem.trim();
+                // Capitalize each letter
+                elem = elem.replace(/\w\S*/g, (txt) => {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                });
+                arr2.push(elem);
+            });
+
+            // Create string from array items
+            if(arr2.length > 2) {
+                console.log("City ? - ", arr2[arr2.length-2]);
+                console.log("County ? - ", arr2[arr2.length-1]);
+            }
+            console.log(arr2.join("\n"));
+            e.target.value = arr2.join("\n");
+        }, 200);
+    }
+
+
+    var onCopy = function (e) {
+        var copyText = document.getElementById(this.dataset.id);
+
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+        console.log("copied: ", copyText.value);
+    }
+
+    inp.addEventListener('keyup', removeSpaces);
+    addr.addEventListener('keyup', textareaCh);
+    cpcode.addEventListener('click', onCopy);
+    cpaddr.addEventListener('click', onCopy);
+</script>
+</body>
+</html>
+<!-- 234 James house,  HIGH STREET, RED SUmmit, DUBLIN, CO. DUBLIN -->
