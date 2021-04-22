@@ -8,19 +8,33 @@
         .lbls { position: relative; width: 105px }
         .lbl-code { bottom: 14px;}
         .lbl-addr {
-            bottom: 95px;
+            position: absolute;
+            margin: 0;
         }
         #remspace { width: 300px; font-size: 25px;}
-        #addr {width: 300px; height: 100px; font-size: 25px;}
+        #addr {
+            width: 300px;
+            height: 130px; 
+            font-size: 20px; 
+            position: relative;
+            left: 109px;
+        }
+        #copyaddr {
+            position: relative;
+            left: 108px;
+            bottom: 10px;
+        }
     </style>
 </head>
 <body>
+ <h1>Made with love for my beautiful wife Mili! <3</h1>
  <form id="form">
+     <!-- TODO add optional pas -->
      <div>
-         <label for="remcomma">Remove Commas</label>
-         <input type="checkbox" id="remcomma" name="remcomma">
-         <label for="pascal">Pascal case</label>
-         <input type="checkbox" id="pascal" name="pascal">
+         <label for="remcomma">Address Remove Commas</label>
+         <input type="checkbox" id="remcomma" name="remcomma" checked disabled>
+         <label for="pascal">Address Capitalize words</label>
+         <input type="checkbox" id="pascal" name="pascal" checked disabled>
     </div>
     <div>
         <label class="lbls lbl-code" for="remspace">Remove Spaces</label>
@@ -28,7 +42,7 @@
         <button id="copyeircode" data-id="remspace" type="button" return false;>copy</button>
     </div>
     <div>
-        <label class="lbls lbl-addr" for="addr">Format address</label>
+        <p class="lbls lbl-addr">Format address</p>
         <textarea id="addr" name="addr" ></textarea>
         <button id="copyaddr" data-id="addr" type="button" return false;>copy</button>
     </div>
