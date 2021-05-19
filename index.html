@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <head>
+    <title>Address formatter</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="author" content="V Zlobin">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         form > div > * {
             display: inline-block;
@@ -14,7 +20,7 @@
         #remspace { width: 300px; font-size: 25px;}
         #addr {
             width: 300px;
-            height: 130px; 
+            height: 150px; 
             font-size: 20px; 
             position: relative;
             left: 109px;
@@ -24,75 +30,156 @@
             left: 108px;
             bottom: 10px;
         }
+        .chbox-container {
+            width: 760px;
+            display: flex;
+        }
+        .chbox-container > span {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chbox-container > span > span:first-child {
+            margin-bottom: 10px;
+        }
+        .chbox-container > span > span {
+            flex-direction: row;
+        } 
+
     </style>
 </head>
 <body>
  <h1>Made with love for my beautiful wife Mili! <3</h1>
  <form id="form">
-     <!-- TODO add optional pas -->
-     <div>
-         <label for="remcomma">Address Remove Commas</label>
-         <input type="checkbox" id="remcomma" name="remcomma" checked disabled>
-         <label for="pascal">Address Capitalize words</label>
-         <input type="checkbox" id="pascal" name="pascal" checked disabled>
-    </div>
-    <div>
-        <label class="lbls lbl-code" for="remspace">Remove Spaces</label>
-        <input type="text" id="remspace" name="remspace"> 
-        <button id="copyeircode" data-id="remspace" type="button" return false;>copy</button>
+    <div class="chbox-container">
+        <span>
+            <span>
+                <label for="remcomma">Address remove commas</label>
+                <input type="checkbox" id="remcomma" name="remcomma" checked disabled>
+            </span>
+            <span>
+                <label for="county">Address remove county prefix</label>
+                <input type="checkbox" id="county" name="county" checked>
+            </span>
+        </span>
+        <span>
+            <span>
+                <label  for="pascal">Address capitalize words</label>
+                <input type="checkbox" id="pascal" name="pascal" checked disabled>
+            </span>
+            <span>
+                <label for="pascal">Address last line EirCode</label>
+                <input type="checkbox" id="addrEirCode" name="addrEirCode" checked>
+            </span>
+        </span>
     </div>
     <div>
         <p class="lbls lbl-addr">Format address</p>
         <textarea id="addr" name="addr" ></textarea>
         <button id="copyaddr" data-id="addr" type="button" return false;>copy</button>
     </div>
+    <div>
+        <label class="lbls lbl-code" for="remspace">Remove Spaces</label>
+        <input type="text" id="remspace" name="remspace"> 
+        <button id="copyeircode" data-id="remspace" type="button" return false;>copy</button>
+    </div>
  </form>
  <script>
-    var cb1 = document.getElementById("remcomma"),
+    // Set false for production
+    const debugMode = false;
+    const cb1 = document.getElementById("remcomma"),
         cb2 = document.getElementById("pascal"),
+        county = document.getElementById("county"),
         inp = document.getElementById("remspace"),
+        isEirC = document.getElementById("addrEirCode"),
         cpcode = document.getElementById("copyeircode"),
         addr = document.getElementById("addr"),
         cpaddr = document.getElementById("copyaddr");
 
-    var clickTimer;
+    let clickTimer;
 
-    var removeSpaces = function (e) {
-        console.log("Input value remove spaces");
-        console.log(e.target.value);
-        e.target.value = e.target.value.replace(" ", "").toUpperCase();
+    /**
+     * Function removes spaces and capitalizes all letters
+     * @param {string | Event} e - event object or string
+     * [@return {string}]  
+     */
+    let removeSpaces = function (e) {
+        if(debugMode) {
+            console.log("Input value remove spaces");
+            console.log(e.target ? e.target.value : e);
+        }
+
+        if(e && e.target) {
+            e.target.value = e.target.value.replace(" ", "").toUpperCase();
+        } else if(typeof e === "string") {
+            return e.replace(" ", "").toUpperCase();
+        }
     }
 
-    var textareaCh = function (e) {
+    /**
+     * Function parses value of the text input to address with each word Having capital letter
+     * each comma if present is replaced with a new lone char
+     * @param {string | Event} e - event object or string
+     */
+    let textareaCh = function (e) {
         if(clickTimer) clearTimeout(clickTimer);
         clickTimer = setTimeout(()=> {
-            var arr = e.target.value.split(","),
+            const val = typeof e === "string" ? e : e.target.value,
+                // Assume there is either comma or Windows new line char
+                splitChar = val.indexOf(",") !== -1 ? "," : "\n",
+                arr = val.split(splitChar),
                 arr2 = [];
-            console.log("Address bar");
-            console.log(e.target.value);
-            arr.forEach(elem => {
-                // remove spaces around
+
+            if(debugMode) {   
+                console.log("Address bar");
+                console.log(val);
+            }
+            
+
+            arr.forEach((elem, i) => {
+                // remove string wrapping spaces
                 elem = elem.trim();
-                // Capitalize each letter
+                // Capitalize each word in the sentence
                 elem = elem.replace(/\w\S*/g, (txt) => {
                     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
                 });
+
+                // Remove county if present
+                if(county.checked) {
+                    elem = elem.replace("Co.", "");
+                    elem = elem.trim();
+                }
+
+                // if EirCode formatter enabled AND last line then it is eir code do format 
+                if(isEirC.checked && i === arr.length - 1) {
+                    console.log("eircode ", elem);
+                    elem = removeSpaces(elem);
+                }
+
+                if(debugMode) {   
+                    console.log("Parsed line:");
+                    console.log(elem);
+                }
+
                 arr2.push(elem);
             });
 
             // Create string from array items
-            if(arr2.length > 2) {
+            if(debugMode && arr2.length > 2) {
                 console.log("City ? - ", arr2[arr2.length-2]);
                 console.log("County ? - ", arr2[arr2.length-1]);
             }
-            console.log(arr2.join("\n"));
-            e.target.value = arr2.join("\n");
+
+            if(debugMode) {
+                console.log(arr2.join("\n"));
+            }
+
+            addr.value = arr2.join("\n");
         }, 200);
     }
 
-
-    var onCopy = function (e) {
-        var copyText = document.getElementById(this.dataset.id);
+    let onCopy = function (e) {
+        const copyText = document.getElementById(this.dataset.id);
 
         /* Select the text field */
         copyText.select();
@@ -100,14 +187,28 @@
 
         /* Copy the text inside the text field */
         document.execCommand("copy");
-        console.log("copied: ", copyText.value);
-    }
 
+        if(debugMode) {
+            console.log("copied: ", copyText.value);
+        }
+    }
+    // Event listeners
     inp.addEventListener('keyup', removeSpaces);
     addr.addEventListener('keyup', textareaCh);
+    county.addEventListener('click', () => textareaCh(addr.value));
+    isEirC.addEventListener('click', () => textareaCh(addr.value));
     cpcode.addEventListener('click', onCopy);
     cpaddr.addEventListener('click', onCopy);
 </script>
 </body>
 </html>
+<!-- Test -->
 <!-- 234 James house,  HIGH STREET, RED SUmmit, DUBLIN, CO. DUBLIN -->
+<!--
+234 James House
+High Street
+Red Summit
+Dublin
+Co. dublin
+A01 B2C3
+--> 
