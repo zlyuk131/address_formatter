@@ -10,6 +10,10 @@ Note!: Please report any bugs or improvement requests to the author!
 
 Functionality Change Log
 -----------------
+_Version 0.0.3_
+- Added: Option to not remove eir code spaces
+- Bug: Fixed where only first space is removed
+
 _Version 0.0.2_
 - Added: checkbox to remove "Co." string from the address
 - Added: checkbox to toggle address last line eircode formatter

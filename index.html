@@ -39,7 +39,7 @@
             display: flex;
             flex-direction: column;
         }
-        .chbox-container > span > span:first-child {
+        .chbox-container > span > span {
             margin-bottom: 10px;
         }
         .chbox-container > span > span {
@@ -61,6 +61,10 @@
                 <label for="county">Address remove county prefix</label>
                 <input type="checkbox" id="county" name="county" checked>
             </span>
+            <span>
+                <label for="eirCodeSpace">Remove EirCode spaces</label>
+                <input type="checkbox" id="eirCodeSpace" name="eirCodeSpace">
+            </span>
         </span>
         <span>
             <span>
@@ -68,7 +72,7 @@
                 <input type="checkbox" id="pascal" name="pascal" checked disabled>
             </span>
             <span>
-                <label for="pascal">Address last line EirCode</label>
+                <label for="addrEirCode">Address last line EirCode</label>
                 <input type="checkbox" id="addrEirCode" name="addrEirCode" checked>
             </span>
         </span>
@@ -92,6 +96,7 @@
         county = document.getElementById("county"),
         inp = document.getElementById("remspace"),
         isEirC = document.getElementById("addrEirCode"),
+        eirCSp = document.getElementById("eirCodeSpace"),
         cpcode = document.getElementById("copyeircode"),
         addr = document.getElementById("addr"),
         cpaddr = document.getElementById("copyaddr");
@@ -103,16 +108,18 @@
      * @param {string | Event} e - event object or string
      * [@return {string}]  
      */
-    let removeSpaces = function (e) {
+    let rmSpaceToUpperCase = function (e) {
+        let replSym = eirCSp.checked ? " " : "";
+
         if(debugMode) {
             console.log("Input value remove spaces");
             console.log(e.target ? e.target.value : e);
         }
 
         if(e && e.target) {
-            e.target.value = e.target.value.replace(" ", "").toUpperCase();
+            e.target.value = e.target.value.replaceAll(replSym, "").toUpperCase();
         } else if(typeof e === "string") {
-            return e.replace(" ", "").toUpperCase();
+            return e.replaceAll(replSym, "").toUpperCase();
         }
     }
 
@@ -153,7 +160,7 @@
                 // if EirCode formatter enabled AND last line then it is eir code do format 
                 if(isEirC.checked && i === arr.length - 1) {
                     console.log("eircode ", elem);
-                    elem = removeSpaces(elem);
+                    elem = rmSpaceToUpperCase(elem);
                 }
 
                 if(debugMode) {   
@@ -193,10 +200,11 @@
         }
     }
     // Event listeners
-    inp.addEventListener('keyup', removeSpaces);
+    inp.addEventListener('keyup', rmSpaceToUpperCase);
     addr.addEventListener('keyup', textareaCh);
     county.addEventListener('click', () => textareaCh(addr.value));
     isEirC.addEventListener('click', () => textareaCh(addr.value));
+    eirCSp.addEventListener('click', () => textareaCh(addr.value));
     cpcode.addEventListener('click', onCopy);
     cpaddr.addEventListener('click', onCopy);
 </script>
