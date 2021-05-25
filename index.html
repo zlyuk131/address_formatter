@@ -108,7 +108,7 @@
      * @param {string | Event} e - event object or string
      * [@return {string}]  
      */
-    let rmSpaceToUpperCase = function (e) {
+    const rmSpaceToUpperCase = function (e) {
         let replSym = eirCSp.checked ? " " : "";
 
         if(debugMode) {
@@ -128,7 +128,7 @@
      * each comma if present is replaced with a new lone char
      * @param {string | Event} e - event object or string
      */
-    let textareaCh = function (e) {
+    const textareaCh = function (e) {
         if(clickTimer) clearTimeout(clickTimer);
         clickTimer = setTimeout(()=> {
             const val = typeof e === "string" ? e : e.target.value,
@@ -185,7 +185,7 @@
         }, 200);
     }
 
-    let onCopy = function (e) {
+    const onCopy = function (e) {
         const copyText = document.getElementById(this.dataset.id);
 
         /* Select the text field */
