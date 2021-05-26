@@ -10,6 +10,10 @@ Note!: Please report any bugs or improvement requests to the author!
 
 Functionality Change Log
 -----------------
+_Version 0.1.0_
+- Added: Date to weeks and days calculation to now in format of dd/mm/yyyy
+- Refactor: replaced JS functions with ES6 arrow functions
+
 _Version 0.0.3_
 - Added: Option to not remove eir code spaces
 - Bug: Fixed where only first space is removed

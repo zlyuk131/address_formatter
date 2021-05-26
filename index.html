@@ -45,12 +45,15 @@
         .chbox-container > span > span {
             flex-direction: row;
         } 
-
+        .date-form .input {
+            position: relative;
+            bottom: 13px;
+        }
     </style>
 </head>
 <body>
  <h1>Address and Eircode Assistant! <3</h1>
- <form id="form">
+ <form>
     <div class="chbox-container">
         <span>
             <span>
@@ -88,6 +91,19 @@
         <button id="copyeircode" data-id="remspace" type="button" return false;>copy</button>
     </div>
  </form>
+
+ <h2>Dates difference in weeks</h2>
+ <form class="date-form">
+     <div>
+         <label for="date-in">Date to calculate difference</label>
+         <input type="text" id="date-in" name="date-in" placeholder="dd/mm/yyyy"> 
+    </div>
+    <div>
+        <label for="date-in">Date difference</label>
+        <input type="text" id="date-in-resp" name="date-in-resp" readonly> 
+        <button id="copy-date" data-id="date-in-resp" type="button" return false;>copy</button>
+    </div>
+</form>
  <script>
     // Set false for production
     const debugMode = false;
@@ -101,6 +117,10 @@
         addr = document.getElementById("addr"),
         cpaddr = document.getElementById("copyaddr");
 
+    const dateIn = document.getElementById("date-in"),
+        dateInResp = document.getElementById("date-in-resp"),
+        cpDate = document.getElementById("copy-date");
+
     let clickTimer;
 
     /**
@@ -108,7 +128,7 @@
      * @param {string | Event} e - event object or string
      * [@return {string}]  
      */
-    const rmSpaceToUpperCase = function (e) {
+    const rmSpaceToUpperCase = (e) => {
         let replSym = eirCSp.checked ? " " : "";
 
         if(debugMode) {
@@ -128,7 +148,7 @@
      * each comma if present is replaced with a new lone char
      * @param {string | Event} e - event object or string
      */
-    const textareaCh = function (e) {
+    const textareaCh = (e) => {
         if(clickTimer) clearTimeout(clickTimer);
         clickTimer = setTimeout(()=> {
             const val = typeof e === "string" ? e : e.target.value,
@@ -185,8 +205,8 @@
         }, 200);
     }
 
-    const onCopy = function (e) {
-        const copyText = document.getElementById(this.dataset.id);
+    const onCopy = (e) => {
+        const copyText = document.getElementById(e.target.dataset.id);
 
         /* Select the text field */
         copyText.select();
@@ -199,14 +219,56 @@
             console.log("copied: ", copyText.value);
         }
     }
+
+    /**
+    * Function calculates difference in time between dates
+    * @param {string} dateIn - date in the past compare difference to now in format dd/mm/yyyy
+    # @return {string} - number of weeks difference
+    */
+    const dateDiffWeeks = (dateIn) => {
+        // Calculates number of milliseconds in one day
+        const MS_PER_DAY = 1000 * 60 * 60 * 24,
+            dt = new Date(dateIn.split("/").reverse().join("-"));
+
+        // Assume date was invalid unless proven otherwise
+        let retVal = "Invalid Date";
+
+        if(dt.toString() !== "Invalid Date") {
+
+            const now = new Date(),    
+                utc1 = Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate()),
+                utc2 = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+            let days = Math.floor((utc2 - utc1) / MS_PER_DAY);
+            if(days < 7) { 
+                retVal = days + " days";
+            } else {
+                let wks = Math.floor(days / 7);
+                
+                days = days - wks * 7;
+                retVal = wks + " weeks " + days + " days";
+            }
+        }
+
+        // Get weeks and days or null
+        return retVal;
+    }
+
     // Event listeners
     inp.addEventListener('keyup', rmSpaceToUpperCase);
     addr.addEventListener('keyup', textareaCh);
     county.addEventListener('click', () => textareaCh(addr.value));
     isEirC.addEventListener('click', () => textareaCh(addr.value));
     eirCSp.addEventListener('click', () => textareaCh(addr.value));
+
     cpcode.addEventListener('click', onCopy);
     cpaddr.addEventListener('click', onCopy);
+
+    // Date eval
+    dateIn.addEventListener('keyup', (e) => {
+        const resp = dateDiffWeeks(e.target.value);
+        dateInResp.value = resp;
+        });
+    cpDate.addEventListener('click', onCopy);
 </script>
 </body>
 </html>
